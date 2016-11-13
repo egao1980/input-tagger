@@ -33,6 +33,18 @@ Example:
     iron-icon:hover {
         cursor: pointer;
     }
+
+    span.tag {
+        padding: 2px 8px 2px 8px;
+        border-radius: 16px;
+        margin: 8px 8px 0 0;
+        display: inline-block;
+        font-family: "Roboto", "Noto", sans-serif;
+        border: 2px solid var(--app-accent-color);
+
+        @apply(--input-tagger-tag);
+    }
+
     </style>
     <template>
         <paper-input-container>
@@ -68,13 +80,6 @@ Example:
                 value: 'Enter here ...'
             },
             /**
-           * `cssClass` is the css class of the tags
-           */
-            cssClass: {// Css class of tagged box
-                type: String,
-                value: ''
-            },
-            /**
            * Out of the box, we provide the animation of animatecss (https://daneden.github.io/animate.css/). `animateClass` is the name of animate class.
            */
             animateClass: {// Animate css class, class name are in https://daneden.github.io/animate.css/
@@ -84,7 +89,7 @@ Example:
         },
 
         returnClass: function() {
-            return this.cssClass + ' animated ' + this.animateClass;            
+            return 'tag animated ' + this.animateClass;            
         },
 
         /**

@@ -22,47 +22,47 @@ Example:
 @demo
 -->
 <dom-module id="input-tagger">
-    <style>
-    :host {
-        display: block;
-        --iron-icon-width: 18px;
-        --iron-icon-height: 18px;
-    }
-    
-    iron-icon:hover {
-        cursor: pointer;
-    }
-
-    iron-icon {
-        background: var(--app-accent-color);
-        color: white;
-        border-radius: 9px;
-        margin-left: 4px;
-        vertical-align: text-bottom;
-        --iron-icon-width: 18px;
-        --iron-icon-height: 18px;
-        @apply(--input-tagger-icon);
-    }
-
-    span.tag {
-        padding: 2px 8px 2px 8px;
-        border-radius: 16px;
-        margin: 8px 8px 0 0;
-        display: inline-block;
-        font-family: "Roboto", "Noto", sans-serif;
-        border: 2px solid var(--app-accent-color);
-
-        @apply(--input-tagger-tag);
-    }
-
-    </style>
     <template>
+        <style>
+            :host {
+                display: block;
+                --iron-icon-width: 18px;
+                --iron-icon-height: 18px;
+            }
+
+            iron-icon:hover {
+                cursor: pointer;
+            }
+
+            iron-icon.tag {
+                background: var(--app-accent-color);
+                color: white;
+                border-radius: 9px;
+                margin-left: 4px;
+                vertical-align: text-bottom;
+                --iron-icon-width: 18px;
+                --iron-icon-height: 18px;
+                @apply(--input-tagger-icon);
+            }
+
+            span.tag {
+                padding: 2px 8px 2px 8px;
+                border-radius: 16px;
+                margin: 8px 8px 0 0;
+                display: inline-block;
+                font-family: "Roboto", "Noto", sans-serif;
+                border: 2px solid var(--app-accent-color);
+
+                @apply(--input-tagger-tag);
+            }
+
+        </style>
         <paper-input-container>
             <label>{{label}}</label>
             <input id="inputField" is="iron-input" on-keyup="addTag" />
         </paper-input-container>
         <template is="dom-repeat" items="{{tags}}" as="tag">
-            <span id={{tag}} class$="{{returnClass()}}">{{tag}}<iron-icon icon="close" on-click="removeTag"></iron-icon> </span>
+            <span id={{tag}} class$="{{returnClass()}}">{{tag}}<iron-icon class="tag" icon="close" on-click="removeTag"></iron-icon> </span>
         </template>
     </template>
 </dom-module>

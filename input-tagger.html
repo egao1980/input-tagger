@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../iron-input/iron-input.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-autocomplete/paper-autocomplete-suggestions.html">
 <link rel="stylesheet" href="animate.css">
 <!--
 Another taggit written on Polymer.
@@ -22,117 +23,139 @@ Example:
 @demo
 -->
 <dom-module id="input-tagger">
-    <template>
-        <style>
-            :host {
-                display: block;
-                --iron-icon-width: 18px;
-                --iron-icon-height: 18px;
-            }
+  <template>
+    <style>
+      :host {
+        display: block;
+        --iron-icon-width: 18px;
+        --iron-icon-height: 18px;
+      }
 
-            iron-icon:hover {
-                cursor: pointer;
-            }
+      iron-icon:hover {
+        cursor: pointer;
+      }
 
-            iron-icon.tag {
-                background: var(--app-accent-color);
-                color: white;
-                border-radius: 9px;
-                margin-left: 4px;
-                vertical-align: text-bottom;
-                --iron-icon-width: 18px;
-                --iron-icon-height: 18px;
-                @apply(--input-tagger-icon);
-            }
+      iron-icon.tag {
+        background: var(--app-accent-color);
+        color: white;
+        border-radius: 9px;
+        margin-left: 4px;
+        vertical-align: text-bottom;
+        --iron-icon-width: 18px;
+        --iron-icon-height: 18px;
+        @apply(--input-tagger-icon);
+      }
 
-            span.tag {
-                padding: 2px 8px 2px 8px;
-                border-radius: 16px;
-                margin: 8px 8px 0 0;
-                display: inline-block;
-                font-family: "Roboto", "Noto", sans-serif;
-                border: 2px solid var(--app-accent-color);
+      span.tag {
+        padding: 2px 8px 2px 8px;
+        border-radius: 16px;
+        margin: 8px 8px 0 0;
+        display: inline-block;
+        font-family: "Roboto", "Noto", sans-serif;
+        border: 2px solid var(--app-accent-color);
 
-                @apply(--input-tagger-tag);
-            }
+        @apply(--input-tagger-tag);
+      }
 
-        </style>
-        <paper-input-container>
-            <label>{{label}}</label>
-            <input id="inputField" is="iron-input" on-keyup="addTag" />
-        </paper-input-container>
-        <template is="dom-repeat" items="{{tags}}" as="tag">
-            <span id={{tag}} class$="{{returnClass()}}">{{tag}}<iron-icon class="tag" icon="close" on-click="removeTag"></iron-icon> </span>
-        </template>
+    </style>
+    <paper-input-container>
+      <label>{{label}}</label>
+      <input id="inputField" is="iron-input" on-keyup="addTag" value="{{suggestion}}"/>
+      <paper-autocomplete-suggestions id="completions" for="inputField" source="[[tagsSuggestions]]"></paper-autocomplete-suggestions>
+    </paper-input-container>
+    <template is="dom-repeat" items="{{tags}}" as="tag">
+      <span id={{tag}} class$="{{returnClass()}}">{{tag}}<iron-icon class="tag" icon="close"
+                                                                    on-click="removeTag"></iron-icon> </span>
     </template>
+  </template>
 </dom-module>
 <script>
-(function() {
+  (function () {
     Polymer({
-        is: 'input-tagger',
+      is: 'input-tagger',
 
-        properties: {
-            /**
-           * `tags` hold the list of tags that created
-           */
-            tags: { 
-                type: Array,
-                notify: true,
-                value: function() {
-                    return [];
-                }
-            },
-            /**
-           * `label` is the floating label of input textbox
-           */
-            label: { //Input text label
-                type: String,
-                value: 'Enter here ...'
-            },
-            /**
-           * Out of the box, we provide the animation of animatecss (https://daneden.github.io/animate.css/). `animateClass` is the name of animate class.
-           */
-            animateClass: {// Animate css class, class name are in https://daneden.github.io/animate.css/
-                type: String,
-                value: 'fadeIn'
-            }
-        },
-
-        returnClass: function() {
-            return 'tag animated ' + this.animateClass;            
-        },
-
+      properties: {
         /**
-           * Attemp to add the tag when hit Enter
-           */
-        addTag: function(e) {
-            if (e.keyCode == 13 && e.target.value) {
-                var value = e.target.value.trim();
-                this.tags = this.tags || [];
-                var duplicated = this.tags.filter(function(x) {
-                    return x == value;
-                });
-                if (!duplicated[0]) {
-                    this.push('tags', value);
-                    this.$.inputField.value = '';
-                } else {
-                    this.toggleClass('infinite', true, this.$$('#' + value));
-                    setTimeout(function() {
-                        this.toggleClass('infinite', false, this.$$('#' + value));
-                    }.bind(this), 1000);
-                }
-            }
+         * `tags` hold the list of tags that created
+         */
+        tags: {
+          type: Array,
+          notify: true,
+          value: function () {
+            return [];
+          }
         },
-
+        tagsSuggestions: {
+          type: Array,
+          value: function () {
+            return [];
+          }
+        },
         /**
-           * Attemp to remove the tag when click on X
-           */
-        removeTag: function(e) {
-            var tag = e.model.tag;
-            this.tags = this.tags.filter(function(x) {
-                return x != tag;
-            });
+         * `label` is the floating label of input textbox
+         */
+        label: { //Input text label
+          type: String,
+          value: 'Enter here ...'
+        },
+        suggestion: { //Input text label
+          type: String,
+          value: '',
+          notify: true
+        },
+        /**
+         * Out of the box, we provide the animation of animatecss (https://daneden.github.io/animate.css/). `animateClass` is the name of animate class.
+         */
+        animateClass: {// Animate css class, class name are in https://daneden.github.io/animate.css/
+          type: String,
+          value: 'fadeIn'
         }
+      },
+
+      returnClass: function () {
+        return 'tag animated ' + this.animateClass;
+      },
+
+      /**
+       * Attemp to add the tag when hit Enter
+       */
+      addTag: function (e) {
+        const completions = this.$.completions;
+
+        if (e.keyCode === 13 && e.target.value) {
+          var value = e.target.value.trim();
+          if (completions.highlightedSuggestion && completions.highlightedSuggestion.option) {
+            value = completions.highlightedSuggestion.option.value.trim();
+          }
+          completions.hideSuggestions();
+
+          this.tags = this.tags || [];
+          var duplicated = this.tags.filter(function (x) {
+            return x === value;
+          });
+          if (!duplicated[0]) {
+            this.push('tags', value);
+            setTimeout(function () {
+              this.$.inputField.value = '';
+            }.bind(this), 100);
+          } else {
+            this.toggleClass('infinite', true, this.$$('#' + value));
+            setTimeout(function () {
+              this.toggleClass('infinite', false, this.$$('#' + value));
+            }.bind(this), 1000);
+          }
+        }
+      },
+
+      /**
+       * Attemp to remove the tag when click on X
+       */
+      removeTag: function (e) {
+        var tag = e.model.tag;
+        this.tags = this.tags.filter(function (x) {
+          return x !== tag;
+        });
+      }
     });
-})();
+  })();
 </script>
